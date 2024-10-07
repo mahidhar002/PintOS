@@ -296,6 +296,12 @@ thread_exit (void)
   NOT_REACHED ();
 }
 
+bool wake_up_time_less(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED) {
+    struct thread *t1 = list_entry(a, struct thread, elem);
+    struct thread *t2 = list_entry(b, struct thread, elem);
+    return t1->wake_up_time < t2->wake_up_time;
+}
+
 /* Yields the CPU.  The current thread is not put to sleep and
    may be scheduled again immediately at the scheduler's whim. */
 void
@@ -374,8 +380,7 @@ thread_get_recent_cpu (void)
 {
   /* Not yet implemented. */
   return 0;
-}
-
+}
 /* Idle thread.  Executes when no other thread is ready to run.
 
    The idle thread is initially put on the ready list by
@@ -423,8 +428,7 @@ kernel_thread (thread_func *function, void *aux)
   intr_enable ();       /* The scheduler runs with interrupts off. */
   function (aux);       /* Execute the thread function. */
   thread_exit ();       /* If function() returns, kill the thread. */
-}
-
+}
 /* Returns the running thread. */
 struct thread *
 running_thread (void) 
@@ -577,8 +581,8 @@ allocate_tid (void)
   lock_release (&tid_lock);
 
   return tid;
-}
-
+}
 /* Offset of `stack' member within `struct thread'.
    Used by switch.S, which can't figure it out on its own. */
 uint32_t thread_stack_ofs = offsetof (struct thread, stack);
+
